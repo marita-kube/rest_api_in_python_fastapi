@@ -1,19 +1,19 @@
 """Database Connection"""
-from sqlalchemy import create_engine
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.orm import DeclarativeBase, sessionmaker
 
-SQLALCHEMY_DATABASE_URL = "sqlite:///./webapp.db"
+SQLALCHEMY_DATABASE_URL = "sqlite+aiosqlite:///./webapp.db"
 
-engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False},
+engine = create_async_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False},
                        )
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+AsyncSessionLocal = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False,)
 
 class Base(DeclarativeBase):
     pass
 
-def get_db():
-    db = SessionLocal()
+async def get_db():
+    session = AsyncSessionLocal()
     try:
-        yield db
+        yield session
     finally:
-        db.close()
+        session.close()
