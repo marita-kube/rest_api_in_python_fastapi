@@ -52,7 +52,7 @@
 
                 <div class="navbar-nav align-items-md-center">
                     <!-- NEW POST -->
-                    <button class="btn btn-outline-light me-2"
+                    <button class="btn btn-outline-light mb-2 mb-md-0 me-md-2"
                             data-bs-toggle="modal"
                             data-bs-target="#createPostModal">
                         New Post
@@ -98,7 +98,8 @@
 <main role="main" class="container mt-5 pt-4">
     <div class="row">
         <div class="col-md-8">
-            {% block content %}{% endblock %}
+            {% block content %}
+            {% endblock %}
         </div>
 
         <aside class="col-md-4">
@@ -240,7 +241,7 @@ createForm.addEventListener("submit", async (e) => {
     postData.user_id = 1;
 
     try {
-        const res = await fetch("/api/posts", {
+        const res = await fetch(`/api/posts`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(postData)
@@ -253,6 +254,14 @@ createForm.addEventListener("submit", async (e) => {
             hideModal("createPostModal");
             showModal("successModal");
             createForm.reset();
+            document
+                    .getElementById("successModal")
+                    .addEventListener("hidden.bs.modal",
+                        () =>{
+                            window.location.reload();
+                        },
+                        {once: true },
+                    );
         } else {
             const err = await res.json();
             document.getElementById("errorMessage").textContent = getErrorMessage(err);
@@ -265,7 +274,8 @@ createForm.addEventListener("submit", async (e) => {
 });
 </script>
 
-{% block scripts %}{% endblock %}
+{% block scripts %}
+{% endblock %}
 
 </body>
 </html>
